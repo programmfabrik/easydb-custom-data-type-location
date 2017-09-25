@@ -1,0 +1,27 @@
+plugin:
+  name: custom-data-type-location
+  version: 1.0
+  server:
+    api-version:
+      require: 1
+  webfrontend:
+    url: custom-data-type-location.js
+    l10n: l10n/
+custom_types:
+  location:
+    elasticsearch:
+    config:
+      schema:
+        - name: longitude
+          parameters:
+            type:
+              type: text
+        - name: latitude
+          parameters:
+            value:
+              type: text
+      mask:
+        - name: show
+          parameters:
+            value:
+              type: bool
