@@ -1,0 +1,18 @@
+plugin:
+  name: custom-data-type-location
+  version: 1.0
+  server:
+    api-version:
+      require: 1
+  webfrontend:
+    url: custom-data-type-location.js
+    l10n: l10n/
+custom_types:
+  location:
+    config:
+      schema:
+        - name: type
+          parameters:
+            value:
+              type: select
+              options: ["latitude_and_longitude"]
