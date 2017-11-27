@@ -23,62 +23,58 @@ class CustomDataTypeLocation extends CustomDataType
 		false
 
 	renderEditorInput: (data) ->
-		onMarkerSelected = (location) =>
-			CUI.Events.trigger
-				node: map
-				type: "editor-changed"
-
-			data[@name()].latitude = location.lat
-			data[@name()].longitude = location.lng
-
-		map = @__initMap(data, true, onMarkerSelected)
-		map
+		initData = @__initData(data)
+		form = @__initForm(initData)
+		form
 
 	renderDetailOutput: (data) ->
-		map = @__initMap(data, false)
-		map
+		initData = @__initData(data)
+		displayFormat = CUI.MapInput.getDefaultDisplayFormat()
+		label = new CUI.Label
+			content:
+				CUI.util.formatCoordinates(initData.position, displayFormat)
+		return label
 
-	__initMap: (data, clickable, onMarkerSelected) ->
+	__initData: (data) ->
 		if not data[@name()]
-			dataField = {}
-			data[@name()] = dataField
+			initData = {}
+			data[@name()] = initData
 		else
-			dataField = data[@name()]
+			initData = data[@name()]
 
-		if dataField.latitude && dataField.longitude
-			currentPosition =
-				lat: dataField.latitude
-				lng: dataField.longitude
+		initData
 
-		# TODO: Center default location?
-		map = new CUI.LeafletMap(
-			center: if currentPosition then currentPosition else {lat: 52.520645, lng: 13.409779}
-			zoom: 12
-			clickable: clickable
-			onMarkerSelected: onMarkerSelected
-		)
+	__initForm: (initData) ->
+		fields = [
+			type: CUI.MapInput
+			zoom: 5
+			name: "position"
+		]
 
-		if currentPosition
-			map.setSelectedMarkerPosition(currentPosition)
-
-		map
-
-	__isLocationSet: (location) =>
-		location && location.latitude && location.longitude
+		form = new CUI.Form
+			fields: fields
+			data: initData
+			onDataChanged: =>
+				CUI.Events.trigger
+					node: form
+					type: "editor-changed"
+		form.start()
+		form
 
 	getSaveData: (data, save_data) ->
-		location = data[@name()]
-		if !@__isLocationSet(location)
+		data = data[@name()] or data._template?[@name()]
+		position = data?.position
+
+		if not CUI.util.isEmpty(position) and not CUI.isPlainObject(position)
+			position = CUI.util.parseCoordinates(position)
+
+		if not position or not CUI.Map.isValidPosition(position)
 			save_data[@name()] = null
 			return save_data
 
 		save_data[@name()] =
-			latitude: location.latitude
-			longitude: location.longitude
-
-	showEditPopover: (data, element, layout) ->
-		console.debug(data)
-		console.debug(element)
-		console.debug(layout)
+			position: position
 
 CustomDataType.register(CustomDataTypeLocation)
+
+
