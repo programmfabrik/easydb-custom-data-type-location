@@ -47,8 +47,11 @@ class CustomDataTypeLocation extends CustomDataType
 	__initForm: (initData) ->
 		fields = [
 			type: CUI.MapInput
-			zoom: 5
 			name: "position"
+			iconName: initData.iconName
+			iconColor: initData.iconColor
+			mapOptions:
+				zoom: 2
 		]
 
 		form = new CUI.Form
@@ -74,6 +77,8 @@ class CustomDataTypeLocation extends CustomDataType
 
 		save_data[@name()] =
 			position: position
+			iconColor: data.iconColor
+			iconName: data.iconName
 
 CustomDataType.register(CustomDataTypeLocation)
 
