@@ -29,11 +29,36 @@ class CustomDataTypeLocation extends CustomDataType
 
 	renderDetailOutput: (data) ->
 		initData = @__initData(data)
+
+		position = initData.mapPosition.position
+
+		centerIcon = new CUI.Button
+			class: "ez5-location-display-button"
+			icon: "fa-dot-circle-o"
+			onClick: =>
+				CUI.Events.trigger
+					type: "map-detail-center"
+					info:	position
+
 		displayFormat = CUI.MapInput.getDefaultDisplayFormat()
 		label = new CUI.Label
 			content:
-				CUI.util.formatCoordinates(initData.position, displayFormat)
-		return label
+				CUI.util.formatCoordinates(position, displayFormat)
+
+		icon = new CUI.Icon(icon: initData.mapPosition.iconName)
+		CUI.dom.setStyleOne(icon, "color", initData.mapPosition.iconColor)
+
+		horizontalLayout = new CUI.HorizontalLayout
+			maximize_vertical: false
+			maximize_horizontal: true
+			left:
+				content: icon
+			center:
+				content: label
+			right:
+				content:centerIcon
+
+		return horizontalLayout
 
 	__initData: (data) ->
 		if not data[@name()]
@@ -47,9 +72,7 @@ class CustomDataTypeLocation extends CustomDataType
 	__initForm: (initData) ->
 		fields = [
 			type: CUI.MapInput
-			name: "position"
-			iconName: initData.iconName
-			iconColor: initData.iconColor
+			name: "mapPosition"
 			mapOptions:
 				zoom: 2
 		]
@@ -66,19 +89,15 @@ class CustomDataTypeLocation extends CustomDataType
 
 	getSaveData: (data, save_data) ->
 		data = data[@name()] or data._template?[@name()]
-		position = data?.position
-
-		if not CUI.util.isEmpty(position) and not CUI.isPlainObject(position)
-			position = CUI.util.parseCoordinates(position)
+		mapPosition = data?.mapPosition
+		position = mapPosition?.position
 
 		if not position or not CUI.Map.isValidPosition(position)
 			save_data[@name()] = null
 			return save_data
 
 		save_data[@name()] =
-			position: position
-			iconColor: data.iconColor
-			iconName: data.iconName
+			mapPosition: mapPosition
 
 CustomDataType.register(CustomDataTypeLocation)
 
