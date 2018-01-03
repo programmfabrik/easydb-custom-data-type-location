@@ -41,9 +41,13 @@ class CustomDataTypeLocation extends CustomDataType
 					info:	position
 
 		displayFormat = CUI.MapInput.getDefaultDisplayFormat()
-		label = new CUI.Label
-			content:
-				CUI.util.formatCoordinates(position, displayFormat)
+		labelButton = new CUI.Button
+			text: CUI.util.formatCoordinates(position, displayFormat)
+			appearance: "flat"
+			onClick: =>
+				CUI.MapInput.defaults.displayFormat = @__getNextDisplayFormat()
+				CUI.Events.trigger
+					type: "location-marker-format-changed"
 
 		icon = new CUI.Icon(icon: initData.mapPosition.iconName)
 		CUI.dom.setStyleOne(icon, "color", initData.mapPosition.iconColor)
@@ -54,9 +58,16 @@ class CustomDataTypeLocation extends CustomDataType
 			left:
 				content: icon
 			center:
-				content: label
+				content: labelButton
 			right:
 				content:centerIcon
+
+		CUI.Events.listen
+			type: "location-marker-format-changed"
+			node: horizontalLayout
+			call: () =>
+				text = CUI.util.formatCoordinates(position, CUI.MapInput.getDefaultDisplayFormat())
+				labelButton.setText(text)
 
 		return horizontalLayout
 
@@ -99,6 +110,18 @@ class CustomDataTypeLocation extends CustomDataType
 		save_data[@name()] =
 			mapPosition: mapPosition
 
+	# This is a 'for now' function, and it is used to get the next display format to switch by clicking in the output.
+	# This will be probably removed when the format switching is in other place.
+	__getNextDisplayFormat: ->
+		displayFormats = Object.keys(CUI.MapInput.displayFormats)
+		index = displayFormats.indexOf(CUI.MapInput.defaults.displayFormat)
+		index++
+		return if index < displayFormats.length then displayFormats[index] else displayFormats[0]
+
 CustomDataType.register(CustomDataTypeLocation)
 
+CUI.ready ->
+	CUI.Events.registerEvent
+		type: "location-marker-format-changed"
+		sink: true
 
