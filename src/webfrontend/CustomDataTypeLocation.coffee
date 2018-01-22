@@ -60,7 +60,7 @@ class CustomDataTypeLocation extends CustomDataType
 			center:
 				content: labelButton
 			right:
-				content:centerIcon
+				content: centerIcon
 
 		CUI.Events.listen
 			type: "location-marker-format-changed"
@@ -68,6 +68,13 @@ class CustomDataTypeLocation extends CustomDataType
 			call: () =>
 				text = CUI.util.formatCoordinates(position, CUI.MapInput.getDefaultDisplayFormat())
 				labelButton.setText(text)
+
+		CUI.Events.listen
+			type: "location-marker-clicked"
+			node: horizontalLayout
+			call: (_, info) =>
+				if info == initData
+					console.debug("Highlight")
 
 		return horizontalLayout
 
@@ -86,11 +93,23 @@ class CustomDataTypeLocation extends CustomDataType
 			name: "mapPosition"
 			mapOptions:
 				zoom: 2
+		,
+			type: CUI.Select
+			data: @__selectedMarkerOptions
+			name: "groupColor"
+			options: =>
+				options = [text: ez5.loca.text("custom.data.type.location.select.no.group"), value: null]
+				for color in ["#31a354", "#2b8cbe", "#dd1c77", "#8856a7", "#de2d26"]
+					icon = new CUI.Icon(class: "css-swatch")
+					CUI.dom.setStyle(icon, background: color)
+					options.push(icon: icon, value: color)
+				options
 		]
 
 		form = new CUI.Form
 			fields: fields
 			data: initData
+			horizontal: true
 			onDataChanged: =>
 				CUI.Events.trigger
 					node: form
@@ -109,6 +128,7 @@ class CustomDataTypeLocation extends CustomDataType
 
 		save_data[@name()] =
 			mapPosition: mapPosition
+			groupColor: data.groupColor
 
 	# This is a 'for now' function, and it is used to get the next display format to switch by clicking in the output.
 	# This will be probably removed when the format switching is in other place.
@@ -125,3 +145,7 @@ CUI.ready ->
 		type: "location-marker-format-changed"
 		sink: true
 
+CUI.ready ->
+	CUI.Events.registerEvent
+		type: "location-marker-clicked"
+		sink: true

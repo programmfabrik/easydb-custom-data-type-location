@@ -4,3 +4,4 @@ custom.data.type.location.setting.schema.rendered_options.latitude_and_longitude
 custom.data.type.location.config.option.schema.type.value.latitude_and_longitude,Latitude and Longitude,Latitude and Longitude,,
 custom.data.type.location.config.parameter.schema.type.value.label,Type,Type,,
 custom.data.type.location.editor.latitude_longitude,Latitude and Longitude separated by comma,Latitude and Longitude separated by comma,,
+custom.data.type.location.select.no.group,Keine Gruppe,No group,,Sin grupo
