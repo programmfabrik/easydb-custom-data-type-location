@@ -49,8 +49,7 @@ class CustomDataTypeLocation extends CustomDataType
 				CUI.Events.trigger
 					type: "location-marker-format-changed"
 
-		icon = new CUI.Icon(icon: initData.mapPosition.iconName)
-		CUI.dom.setStyleOne(icon, "color", initData.mapPosition.iconColor)
+		icon = new CUI.IconMarker(icon: initData.mapPosition.iconName, color: initData.mapPosition.iconColor)
 
 		horizontalLayout = new CUI.HorizontalLayout
 			maximize_vertical: false

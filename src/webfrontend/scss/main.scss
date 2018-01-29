@@ -1,0 +1,27 @@
+.ez5-nested--list {
+	> .ez5-nested-fields {
+		> .ez5-field {
+			&.ez5-custom-data-type-location {
+				margin-top: 12px;
+			}
+		}
+	}
+}
+
+.ez5-custom-data-type-location {
+	> .ez5-field-value {
+		align-items: center;
+		
+		> .cui-horizontal-layout-left {
+			margin-right: 3px;
+		}
+	}
+}
+
+.cui-form-field-name--mapPosition {
+	flex-grow: 1 !important;	
+}
+
+.cui-map-popover {
+	min-width: 0;
+}
