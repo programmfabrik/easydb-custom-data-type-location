@@ -6,6 +6,20 @@
 ###
 class CustomDataTypeLocation extends CustomDataType
 
+	@__groups = [
+		number: 1
+		polyline: "10,8"
+		text: "── ── ── ──"
+	,
+		number: 2
+		polyline: "5,5"
+		text: "─ ─ ─ ─ ─ ─ ─"
+	,
+		number: 3
+		polyline: "1,4"
+		text: "∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙"
+	]
+
 	getCustomDataTypeName: ->
 		"custom:base.custom-data-type-location.location"
 
@@ -19,8 +33,8 @@ class CustomDataTypeLocation extends CustomDataType
 			tags.push($$(preffix + custom_settings["type"]["value"]))
 		return tags
 
-	renderFieldAsGroup: () ->
-		false
+	renderFieldAsGroup: (_, __, opts) ->
+		return opts.mode == 'editor'
 
 	renderEditorInput: (data) ->
 		initData = @__initData(data)
@@ -84,6 +98,14 @@ class CustomDataTypeLocation extends CustomDataType
 		else
 			initData = data[@name()]
 
+			# Replaces the stored group for the structure necessary to render it.
+			if initData.group
+				for group in CustomDataTypeLocation.__groups
+					if initData.group.number == group.number
+						initData.groupColor = initData.group.options.color
+						initData.group = group
+						break
+
 		initData
 
 	__initForm: (initData) ->
@@ -93,22 +115,30 @@ class CustomDataTypeLocation extends CustomDataType
 			mapOptions:
 				zoom: 2
 		,
-			type: CUI.Select
-			data: @__selectedMarkerOptions
-			name: "groupColor"
-			options: =>
-				options = [text: ez5.loca.text("custom.data.type.location.select.no.group"), value: null]
-				for color in ["#31a354", "#2b8cbe", "#dd1c77", "#8856a7", "#de2d26"]
-					icon = new CUI.Icon(class: "css-swatch")
-					CUI.dom.setStyle(icon, background: color)
-					options.push(icon: icon, value: color)
-				options
+			type: CUI.Form
+			horizontal: true
+			fields: [
+				type: CUI.Select
+				name: "group"
+				options: =>
+					options = [text: ez5.loca.text("custom.data.type.location.select.no.group"), value: null]
+					for group in CustomDataTypeLocation.__groups
+						options.push(text: group.text, value: group)
+					options
+			,
+				type: CUI.Select
+				name: "groupColor"
+				options: =>
+					options = [icon: 'css-swatch', value: null]
+					for color in ez5.session.getDefaults().client.tag_colors?.trim().split(",")
+						options.push(icon: 'css-swatch ez5-tag-color-' + color, value: color)
+					options
+				]
 		]
 
 		form = new CUI.Form
 			fields: fields
 			data: initData
-			horizontal: true
 			onDataChanged: =>
 				CUI.Events.trigger
 					node: form
@@ -125,9 +155,18 @@ class CustomDataTypeLocation extends CustomDataType
 			save_data[@name()] = null
 			return save_data
 
-		save_data[@name()] =
+		saveData =
 			mapPosition: mapPosition
-			groupColor: data.groupColor
+
+		if data.group
+			saveData.group =
+				number: data.group.number
+				options:
+					color: data.groupColor
+					polyline: data.group.polyline
+
+		save_data[@name()] = saveData
+
 
 	# This is a 'for now' function, and it is used to get the next display format to switch by clicking in the output.
 	# This will be probably removed when the format switching is in other place.
