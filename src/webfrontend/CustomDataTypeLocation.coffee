@@ -99,7 +99,7 @@ class CustomDataTypeLocation extends CustomDataType
 			initData = data[@name()]
 
 			# Replaces the stored group for the structure necessary to render it.
-			if initData.group
+			if initData.group and not initData.groupColor
 				for group in CustomDataTypeLocation.__groups
 					if initData.group.number == group.number
 						initData.groupColor = initData.group.options.color
