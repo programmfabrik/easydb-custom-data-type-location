@@ -7,15 +7,15 @@
 class CustomDataTypeLocation extends CustomDataType
 
 	@__groups = [
-		number: 1
+		type: "long_dash"
 		polyline: "10,8"
 		text: "── ── ── ──"
 	,
-		number: 2
+		type: "short_dash"
 		polyline: "5,5"
 		text: "─ ─ ─ ─ ─ ─ ─"
 	,
-		number: 3
+		type: "dot_dash"
 		polyline: "1,4"
 		text: "∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙"
 	]
@@ -34,7 +34,7 @@ class CustomDataTypeLocation extends CustomDataType
 		return tags
 
 	renderFieldAsGroup: (_, __, opts) ->
-		return opts.mode == 'editor'
+		return opts.mode == 'editor' or opts.mode == 'editor-template'
 
 	renderEditorInput: (data) ->
 		initData = @__initData(data)
@@ -54,14 +54,26 @@ class CustomDataTypeLocation extends CustomDataType
 					type: "map-detail-center"
 					info:	position
 
-		displayFormat = CUI.MapInput.getDefaultDisplayFormat()
-		labelButton = new CUI.Button
-			text: CUI.util.formatCoordinates(position, displayFormat)
-			appearance: "flat"
-			onClick: =>
-				CUI.MapInput.defaults.displayFormat = @__getNextDisplayFormat()
-				CUI.Events.trigger
-					type: "location-marker-format-changed"
+		displayValue = ez5.loca.getBestFrontendValue(initData.displayValue)
+		if displayValue
+			centerContent = new CUI.Label
+				text: displayValue
+		else
+			displayFormat = CUI.MapInput.getDefaultDisplayFormat()
+			centerContent = new CUI.Button
+				text: CUI.util.formatCoordinates(position, displayFormat)
+				appearance: "flat"
+				onClick: =>
+					CUI.MapInput.defaults.displayFormat = @__getNextDisplayFormat()
+					CUI.Events.trigger
+						type: "location-marker-format-changed"
+
+			CUI.Events.listen
+			type: "location-marker-format-changed"
+			node: horizontalLayout
+			call: () =>
+				text = CUI.util.formatCoordinates(position, CUI.MapInput.getDefaultDisplayFormat())
+				centerContent.setText(text)
 
 		icon = new CUI.IconMarker(icon: initData.mapPosition.iconName, color: initData.mapPosition.iconColor)
 
@@ -71,16 +83,9 @@ class CustomDataTypeLocation extends CustomDataType
 			left:
 				content: icon
 			center:
-				content: labelButton
+				content: centerContent
 			right:
 				content: centerIcon
-
-		CUI.Events.listen
-			type: "location-marker-format-changed"
-			node: horizontalLayout
-			call: () =>
-				text = CUI.util.formatCoordinates(position, CUI.MapInput.getDefaultDisplayFormat())
-				labelButton.setText(text)
 
 		CUI.Events.listen
 			type: "location-marker-clicked"
@@ -101,7 +106,7 @@ class CustomDataTypeLocation extends CustomDataType
 			# Replaces the stored group for the structure necessary to render it.
 			if initData.group and not initData.groupColor
 				for group in CustomDataTypeLocation.__groups
-					if initData.group.number == group.number
+					if initData.group.type == group.type
 						initData.groupColor = initData.group.options.color
 						initData.group = group
 						break
@@ -134,6 +139,13 @@ class CustomDataTypeLocation extends CustomDataType
 						options.push(icon: 'css-swatch ez5-tag-color-' + color, value: color)
 					options
 				]
+		,
+			type: CUI.Form
+			fields: [
+				type: CUI.MultiInput
+				name: "displayValue"
+				control: ez5.loca.getLanguageControl()
+			]
 		]
 
 		form = new CUI.Form
@@ -157,10 +169,11 @@ class CustomDataTypeLocation extends CustomDataType
 
 		saveData =
 			mapPosition: mapPosition
+			displayValue: if not CUI.util.isEmpty(data.displayValue) then data.displayValue
 
 		if data.group
 			saveData.group =
-				number: data.group.number
+				type: data.group.type
 				options:
 					color: data.groupColor
 					polyline: data.group.polyline
