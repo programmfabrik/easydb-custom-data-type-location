@@ -41,6 +41,10 @@ class CustomDataTypeLocation extends CustomDataType
 		form = @__initForm(initData)
 		form
 
+	isVisible: (mode, opts) ->
+		# For now until we implement the search.
+		return super(mode, opts) and mode != "expert"
+
 	renderDetailOutput: (data) ->
 		initData = @__initData(data)
 
