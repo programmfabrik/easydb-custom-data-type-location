@@ -11,13 +11,49 @@
 .ez5-custom-data-type-location {
 	> .ez5-field-value {
 		align-items: center;
-		
+
 		> .cui-horizontal-layout-left {
 			margin-right: 3px;
+		}
+	}
+
+	.cui-horizontal-layout {
+		border: 1px solid $soft-border;
+		padding: 5px;
+        transition: box-shadow 0.5s ease-in-out;
+
+		&.ez5-marker-highlight {
+			-webkit-box-shadow: 0px 0px 10px 0px $highlight-color;
+			-moz-box-shadow: 0px 0px 10px 0px $highlight-color;
+			box-shadow: 0px 0px 10px 0px $highlight-color;
+            transition: box-shadow 0.5s ease-in-out;
+		}
+
+		.cui-horizontal-layout-left {
+			flex-shrink: initial;
+			padding-right: initial;
+			justify-content: initial;
+
+			padding-left: 10px;
+			padding-right: 15px;
+			margin: auto;
+		}
+
+		.cui-horizontal-layout-center {
+			display: inline-block;
+
+			.cui-button.ez5-coordinates-small span {
+				font-size: 10px;
+			}
+		}
+
+		.cui-horizontal-layout-right {
+			padding-right: 10px;
+			margin: auto;
 		}
 	}
 }
 
 .cui-form-field-name--mapPosition {
-	flex-grow: 1 !important;	
+	flex-grow: 1 !important;
 }

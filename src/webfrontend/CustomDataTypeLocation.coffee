@@ -42,7 +42,7 @@ class CustomDataTypeLocation extends CustomDataType
 		form
 
 	isVisible: (mode, opts) ->
-		# For now until we implement the search.
+	# For now until we implement the search.
 		return super(mode, opts) and mode != "expert"
 
 	renderDetailOutput: (data) ->
@@ -53,36 +53,34 @@ class CustomDataTypeLocation extends CustomDataType
 		centerIcon = new CUI.Button
 			class: "ez5-location-display-button"
 			icon: "fa-dot-circle-o"
+			tooltip: text: $$("custom.data.type.location.detail.output.center-button")
 			onClick: =>
 				CUI.Events.trigger
 					type: "map-detail-center"
 					info:	position
 
-		displayValue = ez5.loca.getBestFrontendValue(initData.displayValue)
-		if displayValue
-			centerContent = new CUI.Label
-				text: displayValue
-		else
-			displayFormat = CUI.MapInput.getDefaultDisplayFormat()
-			centerContent = new CUI.Button
-				text: CUI.util.formatCoordinates(position, displayFormat)
-				appearance: "flat"
-				onClick: =>
-					CUI.MapInput.defaults.displayFormat = @__getNextDisplayFormat()
-					CUI.Events.trigger
-						type: "location-marker-format-changed"
+		centerContent = []
 
-			CUI.Events.listen
-			type: "location-marker-format-changed"
-			node: horizontalLayout
-			call: () =>
-				text = CUI.util.formatCoordinates(position, CUI.MapInput.getDefaultDisplayFormat())
-				centerContent.setText(text)
+		displayFormat = CUI.MapInput.getDefaultDisplayFormat()
+		coordinatesButton = new CUI.Button
+			text: CUI.util.formatCoordinates(position, displayFormat)
+			appearance: "flat"
+			onClick: =>
+				CUI.MapInput.defaults.displayFormat = @__getNextDisplayFormat()
+				CUI.Events.trigger
+					type: "location-marker-format-changed"
+
+		multiOutput = @__buildDisplayNameOutput(initData)
+
+		if multiOutput
+			centerContent.push(multiOutput)
+			CUI.dom.addClass(coordinatesButton, "ez5-coordinates-small")
+
+		centerContent.push(coordinatesButton)
 
 		icon = new CUI.IconMarker(icon: initData.mapPosition.iconName, color: initData.mapPosition.iconColor)
 
 		horizontalLayout = new CUI.HorizontalLayout
-			maximize_vertical: false
 			maximize_horizontal: true
 			left:
 				content: icon
@@ -92,13 +90,55 @@ class CustomDataTypeLocation extends CustomDataType
 				content: centerIcon
 
 		CUI.Events.listen
+			type: "location-marker-format-changed"
+			node: horizontalLayout
+			call: () =>
+				text = CUI.util.formatCoordinates(position, CUI.MapInput.getDefaultDisplayFormat())
+				coordinatesButton.setText(text)
+
+		CUI.Events.listen
 			type: "location-marker-clicked"
 			node: horizontalLayout
 			call: (_, info) =>
-				if info == initData
-					console.debug("Highlight")
+				if info.data == initData
+					CUI.dom.scrollIntoView(horizontalLayout)
+					CUI.dom.addClass(horizontalLayout, "ez5-marker-highlight")
+					CUI.setTimeout( =>
+						CUI.dom.removeClass(horizontalLayout, "ez5-marker-highlight")
+					, 2000)
+
+		CUI.Events.listen
+			type: "location-marker-fullscreen-clicked"
+			node: horizontalLayout
+			call: (_, info) =>
+				if info.data == initData
+					multiOutput = @__buildDisplayNameOutput(initData)
+					popover = new CUI.Popover
+						element: info.icon
+						pane:
+							padded: true
+							content: multiOutput or CUI.util.formatCoordinates(initData.mapPosition.position, CUI.MapInput.getDefaultDisplayFormat())
+						onHide: =>
+							popover.destroy()
+					popover.show()
 
 		return horizontalLayout
+
+	__buildDisplayNameOutput: (initData) ->
+		hasDisplayValue = false
+		for _, value of initData.displayValue
+			if not CUI.util.isEmpty(value)
+				hasDisplayValue = true
+				break
+
+		if hasDisplayValue
+			multiOutput = (new CUI.MultiOutput
+				name: "displayValue"
+				data: initData
+				control: ez5.loca.getLanguageControl()
+				showOnlyPreferredKey: false).start()
+
+		return multiOutput
 
 	__initData: (data) ->
 		if not data[@name()]
@@ -142,7 +182,7 @@ class CustomDataTypeLocation extends CustomDataType
 					for color in ez5.session.getDefaults().client.tag_colors?.trim().split(",")
 						options.push(icon: 'css-swatch ez5-tag-color-' + color, value: color)
 					options
-				]
+			]
 		,
 			type: CUI.Form
 			fields: [
@@ -153,6 +193,7 @@ class CustomDataTypeLocation extends CustomDataType
 		]
 
 		form = new CUI.Form
+			maximize_horizontal: true
 			fields: fields
 			data: initData
 			onDataChanged: =>
@@ -203,4 +244,9 @@ CUI.ready ->
 CUI.ready ->
 	CUI.Events.registerEvent
 		type: "location-marker-clicked"
+		sink: true
+
+CUI.ready ->
+	CUI.Events.registerEvent
+		type: "location-marker-fullscreen-clicked"
 		sink: true
