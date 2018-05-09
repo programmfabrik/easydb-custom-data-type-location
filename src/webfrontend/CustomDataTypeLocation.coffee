@@ -61,22 +61,17 @@ class CustomDataTypeLocation extends CustomDataType
 
 		centerContent = []
 
-		displayFormat = CUI.MapInput.getDefaultDisplayFormat()
-		coordinatesButton = new CUI.Button
-			text: CUI.util.formatCoordinates(position, displayFormat)
-			appearance: "flat"
-			onClick: =>
-				CUI.MapInput.defaults.displayFormat = @__getNextDisplayFormat()
-				CUI.Events.trigger
-					type: "location-marker-format-changed"
-
 		multiOutput = @__buildDisplayNameOutput(initData)
-
 		if multiOutput
 			centerContent.push(multiOutput)
-			CUI.dom.addClass(coordinatesButton, "ez5-coordinates-small")
+			coordinatesSize = "mini"
 
-		centerContent.push(coordinatesButton)
+		displayFormat = CUI.MapInput.getDefaultDisplayFormat()
+		coordinatesLabel = new CUI.Label
+			text: CUI.util.formatCoordinates(position, displayFormat)
+			size: coordinatesSize or "normal"
+
+		centerContent.push(coordinatesLabel)
 
 		icon = new CUI.IconMarker(icon: initData.mapPosition.iconName, color: initData.mapPosition.iconColor)
 
@@ -88,13 +83,6 @@ class CustomDataTypeLocation extends CustomDataType
 				content: centerContent
 			right:
 				content: centerIcon
-
-		CUI.Events.listen
-			type: "location-marker-format-changed"
-			node: horizontalLayout
-			call: () =>
-				text = CUI.util.formatCoordinates(position, CUI.MapInput.getDefaultDisplayFormat())
-				coordinatesButton.setText(text)
 
 		CUI.Events.listen
 			type: "location-marker-clicked"
@@ -225,28 +213,17 @@ class CustomDataTypeLocation extends CustomDataType
 
 		save_data[@name()] = saveData
 
-
-	# This is a 'for now' function, and it is used to get the next display format to switch by clicking in the output.
-	# This will be probably removed when the format switching is in other place.
-	__getNextDisplayFormat: ->
-		displayFormats = Object.keys(CUI.MapInput.displayFormats)
-		index = displayFormats.indexOf(CUI.MapInput.defaults.displayFormat)
-		index++
-		return if index < displayFormats.length then displayFormats[index] else displayFormats[0]
+	allowsList: ->
+		return false
 
 CustomDataType.register(CustomDataTypeLocation)
 
 CUI.ready ->
-	CUI.Events.registerEvent
-		type: "location-marker-format-changed"
-		sink: true
 
-CUI.ready ->
 	CUI.Events.registerEvent
 		type: "location-marker-clicked"
 		sink: true
 
-CUI.ready ->
 	CUI.Events.registerEvent
 		type: "location-marker-fullscreen-clicked"
 		sink: true
