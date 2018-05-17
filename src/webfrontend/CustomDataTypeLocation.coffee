@@ -59,19 +59,13 @@ class CustomDataTypeLocation extends CustomDataType
 					type: "map-detail-center"
 					info:	position
 
-		centerContent = []
+		label = @__buildDisplayNameOutput(initData)
 
-		multiOutput = @__buildDisplayNameOutput(initData)
-		if multiOutput
-			centerContent.push(multiOutput)
-			coordinatesSize = "mini"
-
-		displayFormat = CUI.MapInput.getDefaultDisplayFormat()
-		coordinatesLabel = new CUI.Label
-			text: CUI.util.formatCoordinates(position, displayFormat)
-			size: coordinatesSize or "normal"
-
-		centerContent.push(coordinatesLabel)
+		if !label
+			displayFormat = CUI.MapInput.getDefaultDisplayFormat()
+			label = new CUI.Label
+				text: CUI.util.formatCoordinates(position, displayFormat)
+				size: "normal"
 
 		icon = new CUI.IconMarker(icon: initData.mapPosition.iconName, color: initData.mapPosition.iconColor)
 
@@ -80,7 +74,7 @@ class CustomDataTypeLocation extends CustomDataType
 			left:
 				content: icon
 			center:
-				content: centerContent
+				content: label
 			right:
 				content: centerIcon
 

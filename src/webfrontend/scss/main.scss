@@ -9,6 +9,8 @@
 }
 
 .ez5-custom-data-type-location {
+	margin-top: 3px;
+	
 	> .ez5-field-value {
 		align-items: center;
 
@@ -17,33 +19,40 @@
 		}
 	}
 
-	.cui-horizontal-layout {
-		border: 1px solid $soft-border;
-		padding: 5px;
-        transition: box-shadow 0.5s ease-in-out;
+	.cui-icon-marker {
+		@include clickable;
+		transition: filter .5s ease-in-out;
 
-		&.ez5-marker-highlight {
-			box-shadow: 0 0 10px 0 $highlight-color;
-            transition: box-shadow 0.5s ease-in-out;
+		.ez5-marker-highlight & {
+			filter: drop-shadow(0 0 5px #{$highlight-color});
 		}
+	}
+
+	.cui-horizontal-layout {
+		overflow: visible;
 
 		.cui-horizontal-layout-left {
-			padding-left: 10px;
-			padding-right: 15px;
-			margin-right: auto;
+			margin-right: 0;
 		}
 
 		.cui-horizontal-layout-center {
 			display: inline-block;
-		}
-
-		.cui-horizontal-layout-right {
-			padding-right: 10px;
-			margin: auto;
+			margin: 0 10px;
 		}
 	}
 }
 
 .cui-form-field-name--group {
 	flex-grow: 1 !important;
+}
+
+.cui-browser-ie:not(.cui-browser-edge) {
+	// IE fallback for filter
+	.ez5-custom-data-type-location .cui-icon-marker {
+		transition: box-shadow .5s ease-in-out;
+
+		.ez5-marker-highlight & {
+			box-shadow: 0 0 10px 2px $highlight-color;
+		}
+	}
 }
