@@ -20,23 +20,23 @@
 	}
 
 	.cui-icon-marker {
-		@include clickable;
 		transition: filter .5s ease-in-out;
-
-		.ez5-marker-highlight & {
-			filter: drop-shadow(0 0 5px #{$highlight-color});
-		}
 	}
 
 	.cui-horizontal-layout {
 		overflow: visible;
+		align-items: center;
+
+		&.ez5-marker-highlight .cui-icon-marker {
+			filter: drop-shadow(0 0 5px #{$highlight-color});
+		}
 
 		.cui-horizontal-layout-left {
-			margin-right: 0;
+			margin: 0;
+			overflow: visible;
 		}
 
 		.cui-horizontal-layout-center {
-			display: inline-block;
 			margin: 0 10px;
 		}
 	}
@@ -48,10 +48,12 @@
 
 .cui-browser-ie:not(.cui-browser-edge) {
 	// IE fallback for filter
-	.ez5-custom-data-type-location .cui-icon-marker {
-		transition: box-shadow .5s ease-in-out;
+	.ez5-custom-data-type-location {
+		.cui-icon-marker  {
+			transition: box-shadow .5s ease-in-out;
+		}
 
-		.ez5-marker-highlight & {
+		.ez5-marker-highlight .cui-icon-marker {
 			box-shadow: 0 0 10px 2px $highlight-color;
 		}
 	}

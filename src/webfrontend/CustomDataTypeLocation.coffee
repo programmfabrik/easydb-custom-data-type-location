@@ -50,15 +50,6 @@ class CustomDataTypeLocation extends CustomDataType
 
 		position = initData.mapPosition.position
 
-		centerIcon = new CUI.Button
-			class: "ez5-location-display-button"
-			icon: "fa-dot-circle-o"
-			tooltip: text: $$("custom.data.type.location.detail.output.center-button")
-			onClick: =>
-				CUI.Events.trigger
-					type: "map-detail-center"
-					info:	position
-
 		label = @__buildDisplayNameOutput(initData)
 
 		if !label
@@ -67,7 +58,15 @@ class CustomDataTypeLocation extends CustomDataType
 				text: CUI.util.formatCoordinates(position, displayFormat)
 				size: "normal"
 
-		icon = new CUI.IconMarker(icon: initData.mapPosition.iconName, color: initData.mapPosition.iconColor)
+		icon = new CUI.IconMarker(
+			icon: initData.mapPosition.iconName,
+			color: initData.mapPosition.iconColor,
+			tooltip: text: $$("custom.data.type.location.detail.output.center-button")
+			onClick: =>
+				CUI.Events.trigger
+					type: "map-detail-center"
+					info:	position
+		)
 
 		horizontalLayout = new CUI.HorizontalLayout
 			maximize_horizontal: true
@@ -75,8 +74,6 @@ class CustomDataTypeLocation extends CustomDataType
 				content: icon
 			center:
 				content: label
-			right:
-				content: centerIcon
 
 		CUI.Events.listen
 			type: "location-marker-clicked"
