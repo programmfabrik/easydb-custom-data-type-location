@@ -50,6 +50,8 @@ class CustomDataTypeLocation extends CustomDataType
 
 		position = initData.mapPosition.position
 
+
+
 		label = @__buildDisplayNameOutput(initData)
 
 		if !label
@@ -127,10 +129,9 @@ class CustomDataTypeLocation extends CustomDataType
 			initData = data[@name()]
 
 			# Replaces the stored group for the structure necessary to render it.
-			if initData.group and not initData.groupColor
+			if initData.group
 				for group in CustomDataTypeLocation.__groups
 					if initData.group.type == group.type
-						initData.groupColor = initData.group.options.color
 						initData.group = group
 						break
 
@@ -152,14 +153,6 @@ class CustomDataTypeLocation extends CustomDataType
 					options = [text: ez5.loca.text("custom.data.type.location.select.no.group"), value: null]
 					for group in CustomDataTypeLocation.__groups
 						options.push(text: group.text, value: group)
-					options
-			,
-				type: CUI.Select
-				name: "groupColor"
-				options: =>
-					options = [icon: 'css-swatch', value: null]
-					for color in ez5.session.getDefaults().client.tag_colors?.trim().split(",")
-						options.push(icon: 'css-swatch ez5-tag-color-' + color, value: color)
 					options
 			]
 		,
@@ -199,7 +192,7 @@ class CustomDataTypeLocation extends CustomDataType
 			saveData.group =
 				type: data.group.type
 				options:
-					color: data.groupColor
+					color: "black"
 					polyline: data.group.polyline
 
 		save_data[@name()] = saveData
