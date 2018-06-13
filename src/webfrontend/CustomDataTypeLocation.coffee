@@ -42,19 +42,25 @@ class CustomDataTypeLocation extends CustomDataType
 		form
 
 	isVisible: (mode, opts) ->
-	# For now until we implement the search.
+		# For now until we implement the search.
 		return super(mode, opts) and mode != "expert"
+
+	isEmpty: (data) ->
+		isEmpty = super(data)
+		if isEmpty
+			return isEmpty
+		position = data[@name()].mapPosition?.position
+		if not position
+			return true
+		return not CUI.Map.isValidPosition(position)
 
 	renderDetailOutput: (data) ->
 		initData = @__initData(data)
 
 		position = initData.mapPosition.position
-
-
-
 		label = @__buildDisplayNameOutput(initData)
 
-		if !label
+		if not label
 			displayFormat = CUI.MapInput.getDefaultDisplayFormat()
 			label = new CUI.Label
 				text: CUI.util.formatCoordinates(position, displayFormat)
