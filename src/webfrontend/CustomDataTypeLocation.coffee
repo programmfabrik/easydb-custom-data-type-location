@@ -6,17 +6,27 @@
 ###
 class CustomDataTypeLocation extends CustomDataType
 
-	@__groups = [
-		type: "long_dash"
-		polyline: "10,8"
+	# These are the options of the groups. The structure of the object 'value' is the same as the structure needed by the map.
+	@__groupOptions = [
+		value:
+			type: "long_dash"
+			options:
+				polyline: "10,8"
+				color: "black"
 		text: "── ── ── ──"
 	,
-		type: "short_dash"
-		polyline: "5,5"
+		value:
+			type: "short_dash"
+			options:
+				polyline: "5,5"
+				color: "black"
 		text: "─ ─ ─ ─ ─ ─ ─"
 	,
-		type: "dot_dash"
-		polyline: "1,4"
+		value:
+			type: "dot_dash"
+			options:
+				polyline: "1,4"
+				color: "black"
 		text: "∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙"
 	]
 
@@ -54,7 +64,7 @@ class CustomDataTypeLocation extends CustomDataType
 			return true
 		return not CUI.Map.isValidPosition(position)
 
-	renderDetailOutput: (data) ->
+	renderDetailOutput: (data, _, opts) ->
 		initData = @__initData(data)
 
 		position = initData.mapPosition.position
@@ -83,31 +93,45 @@ class CustomDataTypeLocation extends CustomDataType
 			center:
 				content: label
 
-		CUI.Events.listen
-			type: "location-marker-clicked"
-			node: horizontalLayout
-			call: (_, info) =>
-				if info.data == initData
-					CUI.dom.scrollIntoView(horizontalLayout)
-					CUI.dom.addClass(horizontalLayout, "ez5-marker-highlight")
-					CUI.setTimeout( =>
-						CUI.dom.removeClass(horizontalLayout, "ez5-marker-highlight")
-					, 2000)
+		plugins = opts.detail.getPlugins()
+		for plugin in plugins
+			if plugin instanceof MapDetailPlugin
+				mapPlugin = plugin
+				break
 
-		CUI.Events.listen
-			type: "location-marker-fullscreen-clicked"
-			node: horizontalLayout
-			call: (_, info) =>
-				if info.data == initData
-					multiOutput = @__buildDisplayNameOutput(initData)
-					popover = new CUI.Popover
-						element: info.icon
-						pane:
-							padded: true
-							content: multiOutput or CUI.util.formatCoordinates(initData.mapPosition.position, CUI.MapInput.getDefaultDisplayFormat())
-						onHide: =>
-							popover.destroy()
-					popover.show()
+		if mapPlugin
+			mapData =
+				position: initData.mapPosition.position
+				iconColor: initData.mapPosition.iconColor
+				iconName: initData.mapPosition.iconName
+				group: initData.group
+			mapPlugin.addMarker(mapData)
+
+			CUI.Events.listen
+				type: "map-detail-click-location"
+				node: horizontalLayout
+				call: (_, info) =>
+					if info.data == mapData
+						CUI.dom.scrollIntoView(horizontalLayout)
+						CUI.dom.addClass(horizontalLayout, "ez5-marker-highlight")
+						CUI.setTimeout( =>
+							CUI.dom.removeClass(horizontalLayout, "ez5-marker-highlight")
+						, 2000)
+
+			CUI.Events.listen
+				type: "map-detail-fullscreen-click-location"
+				node: horizontalLayout
+				call: (_, info) =>
+					if info.data == mapData
+						multiOutput = @__buildDisplayNameOutput(initData)
+						popover = new CUI.Popover
+							element: info.icon
+							pane:
+								padded: true
+								content: multiOutput or CUI.util.formatCoordinates(initData.mapPosition.position, CUI.MapInput.getDefaultDisplayFormat())
+							onHide: =>
+								popover.destroy()
+						popover.show()
 
 		return horizontalLayout
 
@@ -134,12 +158,12 @@ class CustomDataTypeLocation extends CustomDataType
 		else
 			initData = data[@name()]
 
-			# Replaces the stored group for the structure necessary to render it.
-			if initData.group
-				for group in CustomDataTypeLocation.__groups
-					if initData.group.type == group.type
-						initData.group = group
-						break
+		# Replaces the stored group with the options, to match the value in the select.
+		if initData.group
+			for group in CustomDataTypeLocation.__groupOptions
+				if initData.group.type == group.value.type
+					initData.group = group.value
+					break
 
 		initData
 
@@ -157,8 +181,8 @@ class CustomDataTypeLocation extends CustomDataType
 				name: "group"
 				options: =>
 					options = [text: ez5.loca.text("custom.data.type.location.select.no.group"), value: null]
-					for group in CustomDataTypeLocation.__groups
-						options.push(text: group.text, value: group)
+					for group in CustomDataTypeLocation.__groupOptions
+						options.push(text: group.text, value: group.value)
 					options
 			]
 		,
@@ -195,25 +219,16 @@ class CustomDataTypeLocation extends CustomDataType
 			displayValue: if not CUI.util.isEmpty(data.displayValue) then data.displayValue
 
 		if data.group
-			saveData.group =
-				type: data.group.type
-				options:
-					color: "black"
-					polyline: data.group.polyline
+			saveData.group = data.group
 
 		save_data[@name()] = saveData
+
+	isPluginSupported: (plugin) ->
+		if plugin instanceof MapDetailPlugin
+			return true
+		return false
 
 	allowsList: ->
 		return false
 
 CustomDataType.register(CustomDataTypeLocation)
-
-CUI.ready ->
-
-	CUI.Events.registerEvent
-		type: "location-marker-clicked"
-		sink: true
-
-	CUI.Events.registerEvent
-		type: "location-marker-fullscreen-clicked"
-		sink: true
