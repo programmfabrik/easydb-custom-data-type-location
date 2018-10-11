@@ -93,6 +93,10 @@ class CustomDataTypeLocation extends CustomDataType
 			center:
 				content: label
 
+		# When renderDetailOutput is not invoked with opts.detail, probably it is not invoked from the detail sidebar. (print for example)
+		if not opts.detail
+			return horizontalLayout
+
 		plugins = opts.detail.getPlugins()
 		for plugin in plugins
 			if plugin instanceof MapDetailPlugin
