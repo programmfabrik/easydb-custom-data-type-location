@@ -4,11 +4,9 @@ plugin:
   server:
     api-version:
       require: 1
-  scss:
-    body:
-      - build/webfrontend/custom-data-type-location.scss
   webfrontend:
     url: custom-data-type-location.js
+    css: custom-data-type-location.css
     l10n: l10n/
 custom_types:
   location:
