@@ -28,7 +28,7 @@
 		align-items: center;
 
 		&.ez5-marker-highlight .cui-icon-marker {
-			filter: drop-shadow(0 0 5px #{$highlight-color});
+			filter: drop-shadow(0 0 5px var(--highlight));
 		}
 
 		.cui-horizontal-layout-left {
@@ -54,7 +54,7 @@
 		}
 
 		.ez5-marker-highlight .cui-icon-marker {
-			box-shadow: 0 0 10px 2px $highlight-color;
+			box-shadow: 0 0 10px 2px var(--highlight);
 		}
 	}
 }
