@@ -67,7 +67,10 @@ class CustomDataTypeLocation extends CustomDataType
 	renderDetailOutput: (data, _, opts) ->
 		initData = @__initData(data)
 
-		position = initData.mapPosition.position
+		position = initData.mapPosition?.position
+		if not position
+			return
+
 		label = @__buildDisplayNameOutput(initData)
 
 		if not label
