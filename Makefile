@@ -1,7 +1,5 @@
 PLUGIN_NAME = custom-data-type-location
 
-EASYDB_LIB = ../../library
-
 L10N_FILES = l10n/$(PLUGIN_NAME).csv
 L10N_GOOGLE_KEY = 1Z3UPJ6XqLBp-P8SUf-ewq4osNJ3iZWKJB83tc6Wrfn0
 L10N_GOOGLE_GID = 617191347
@@ -23,7 +21,7 @@ all: build
 
 SCSS_FILES = src/webfrontend/scss/custom-data-type-location.scss
 
-include $(EASYDB_LIB)/tools/base-plugins.make
+include easydb-library/tools/base-plugins.make
 build: code $(L10N) css
 
 code: $(JS)
