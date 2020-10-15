@@ -64,6 +64,9 @@ class CustomDataTypeLocation extends CustomDataType
 			return true
 		return not CUI.Map.isValidPosition(position)
 
+	needsDirectRender: ->
+		return true
+
 	renderDetailOutput: (data, _, opts) ->
 		initData = @__initData(data)
 
