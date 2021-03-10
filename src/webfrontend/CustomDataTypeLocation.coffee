@@ -226,7 +226,15 @@ class CustomDataTypeLocation extends CustomDataType
 
 		saveData =
 			mapPosition: mapPosition
-			displayValue: if not CUI.util.isEmpty(data.displayValue) then data.displayValue
+
+		if not CUI.util.isEmpty(data.displayValue)
+			saveData.displayValue = data.displayValue
+
+			fullText = Object.values(data.displayValue).filter((value) -> !!value).join(", ")
+			saveData._fulltext =
+				l10ntext: data.displayValue
+				text: fullText
+				string: fullText
 
 		if data.group
 			saveData.group = data.group
