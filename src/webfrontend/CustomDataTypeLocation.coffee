@@ -215,31 +215,9 @@ class CustomDataTypeLocation extends CustomDataType
 		form.start()
 		form
 
-	getSaveData: (data, save_data) ->
+	getSaveData: (data, save_data = {}) ->
 		data = data[@name()] or data._template?[@name()]
-		mapPosition = data?.mapPosition
-		position = mapPosition?.position
-
-		if not position or not CUI.Map.isValidPosition(position)
-			save_data[@name()] = null
-			return save_data
-
-		saveData =
-			mapPosition: mapPosition
-
-		if not CUI.util.isEmpty(data.displayValue)
-			saveData.displayValue = data.displayValue
-
-			fullText = Object.values(data.displayValue).filter((value) -> !!value).join(", ")
-			saveData._fulltext =
-				l10ntext: data.displayValue
-				text: fullText
-				string: fullText
-
-		if data.group
-			saveData.group = data.group
-
-		save_data[@name()] = saveData
+		save_data[@name()] = LocationUtils.getSaveData(data)
 
 	isPluginSupported: (plugin) ->
 		if plugin instanceof MapDetailPlugin

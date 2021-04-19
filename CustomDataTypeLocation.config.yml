@@ -11,6 +11,9 @@ plugin:
 
 custom_types:
   location:
+    update:
+      script: build/scripts/location-update.js
+      batch_size: 1000
     mapping:
       displayName:
         type: text_l10n

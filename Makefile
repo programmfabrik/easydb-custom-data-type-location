@@ -14,7 +14,9 @@ INSTALL_FILES = \
 	$(JS) \
 	CustomDataTypeLocation.config.yml
 
-COFFEE_FILES = src/webfrontend/CustomDataTypeLocation.coffee
+COFFEE_FILES = \
+	src/webfrontend/LocationUtils.coffee \
+	src/webfrontend/CustomDataTypeLocation.coffee
 
 all: build
 
@@ -23,7 +25,16 @@ SCSS_FILES = src/webfrontend/scss/custom-data-type-location.scss
 include easydb-library/tools/base-plugins.make
 build: code $(L10N) css
 
-code: $(JS)
+UPDATE_SCRIPT_COFFEE_FILES = \
+	src/webfrontend/LocationUtils.coffee \
+	src/script/LocationUpdate.coffee
+UPDATE_SCRIPT_BUILD_FILE = build/scripts/location-update.js
+
+${UPDATE_SCRIPT_BUILD_FILE}: $(subst .coffee,.coffee.js,${UPDATE_SCRIPT_COFFEE_FILES})
+	mkdir -p $(dir $@)
+	cat $^ > $@
+
+code: $(JS) $(UPDATE_SCRIPT_BUILD_FILE)
 
 clean: clean-base
 
