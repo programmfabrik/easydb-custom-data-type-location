@@ -12,6 +12,7 @@ INSTALL_FILES = \
 	$(WEB)/l10n/it-IT.json \
 	$(CSS) \
 	$(JS) \
+	build/scripts/location-update.js \
 	CustomDataTypeLocation.config.yml
 
 COFFEE_FILES = \
