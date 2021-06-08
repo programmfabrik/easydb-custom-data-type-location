@@ -227,4 +227,7 @@ class CustomDataTypeLocation extends CustomDataType
 	allowsList: ->
 		return false
 
+	supportsStandard: ->
+		return true
+
 CustomDataType.register(CustomDataTypeLocation)

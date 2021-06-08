@@ -14,6 +14,8 @@ class LocationUtils
 			saveData.displayValue = data.displayValue
 
 			fullText = Object.values(data.displayValue).filter((value) -> !!value).join(", ")
+			saveData._standard =
+				l10ntext: data.displayValue
 			saveData._fulltext =
 				l10ntext: data.displayValue
 				text: fullText
