@@ -24,7 +24,7 @@ all: build
 SCSS_FILES = src/webfrontend/scss/custom-data-type-location.scss
 
 include easydb-library/tools/base-plugins.make
-build: code $(L10N) css
+build: code $(L10N) css buildinfojson
 
 UPDATE_SCRIPT_COFFEE_FILES = \
 	src/webfrontend/LocationUtils.coffee \
