@@ -13,7 +13,7 @@ INSTALL_FILES = \
 	$(CSS) \
 	$(JS) \
 	build/scripts/location-update.js \
-	CustomDataTypeLocation.config.yml
+	manifest.yml
 
 COFFEE_FILES = \
 	src/webfrontend/LocationUtils.coffee \
