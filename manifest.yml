@@ -1,5 +1,6 @@
 plugin:
   name: custom-data-type-location
+  url: https://github.com/programmfabrik/easydb-custom-data-type-location
   displayname:
     en-US: "Custom Data Type: Location"
     de-DE: "Custom Data Type: Location"
