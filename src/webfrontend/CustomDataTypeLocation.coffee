@@ -87,9 +87,12 @@ class CustomDataTypeLocation extends CustomDataType
 			color: initData.mapPosition.iconColor,
 			tooltip: text: $$("custom.data.type.location.detail.output.center-button")
 			onClick: =>
-				CUI.Events.trigger
-					type: "map-detail-center"
-					info:	position
+				if typeof MapDetailPlugin != 'undefined'
+					CUI.Events.trigger
+						type: "map-detail-center"
+						info:	position
+				else
+					console.warn("MapDetailPlugin is not available.")
 		)
 
 		horizontalLayout = new CUI.HorizontalLayout
@@ -105,7 +108,7 @@ class CustomDataTypeLocation extends CustomDataType
 
 		plugins = opts.detail.getPlugins()
 		for plugin in plugins
-			if plugin instanceof MapDetailPlugin
+			if typeof MapDetailPlugin != 'undefined' and plugin instanceof MapDetailPlugin
 				mapPlugin = plugin
 				break
 
@@ -220,7 +223,7 @@ class CustomDataTypeLocation extends CustomDataType
 		save_data[@name()] = LocationUtils.getSaveData(data)
 
 	isPluginSupported: (plugin) ->
-		if plugin instanceof MapDetailPlugin
+		if typeof MapDetailPlugin != 'undefined' and plugin instanceof MapDetailPlugin
 			return true
 		return false
 
