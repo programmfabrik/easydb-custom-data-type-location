@@ -67,7 +67,8 @@ class CustomDataTypeLocation extends CustomDataType
 	needsDirectRender: ->
 		return true
 
-	renderDetailOutput: (data, _, opts) ->
+
+	__getOutputLabel: (data) ->
 		initData = @__initData(data)
 
 		position = initData.mapPosition?.position
@@ -81,6 +82,14 @@ class CustomDataTypeLocation extends CustomDataType
 			label = new CUI.Label
 				text: CUI.util.formatCoordinates(position, displayFormat)
 				size: "normal"
+		return label
+
+	renderTableOutput: (data, top_level_data, opts) ->
+		return @__getOutputLabel(data)
+
+	renderDetailOutput: (data, _, opts) ->
+		initData = @__initData(data)
+		label = @__getOutputLabel(data)
 
 		icon = new CUI.IconMarker(
 			icon: initData.mapPosition.iconName,
