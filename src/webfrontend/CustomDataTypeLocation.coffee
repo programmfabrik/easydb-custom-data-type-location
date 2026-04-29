@@ -95,13 +95,10 @@ class CustomDataTypeLocation extends CustomDataType
 			icon: initData.mapPosition.iconName,
 			color: initData.mapPosition.iconColor,
 			tooltip: text: $$("custom.data.type.location.detail.output.center-button")
-			onClick: =>
-				if typeof MapDetailPlugin != 'undefined'
-					CUI.Events.trigger
-						type: "map-detail-center"
-						info:	position
-				else
-					console.warn("MapDetailPlugin is not available.")
+			onClick: if typeof MapDetailPlugin != 'undefined' and initData.mapPosition.position then =>
+				CUI.Events.trigger
+					type: "map-detail-center"
+					info: initData.mapPosition.position
 		)
 
 		horizontalLayout = new CUI.HorizontalLayout
