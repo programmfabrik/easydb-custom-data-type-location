@@ -4,6 +4,11 @@ plugin:
   displayname:
     en-US: "Custom Data Type: Location"
     de-DE: "Custom Data Type: Location"
+  info:
+    de-DE: |
+      Ein Feldtyp zum Speichern geografischer Koordinaten. Hinterlegen Sie GPS-Koordinaten an einem Datensatz, und das Plugin zeigt den Standort in der Detailansicht des Datensatzes auf einer Karte an.
+    en-US: |
+      A custom data type for storing geographic coordinates. Enter GPS coordinates on a record and the plugin displays the location on a map in the record's detail view.
   version: 1.0
   server:
     api-version:
